@@ -1,6 +1,11 @@
 .turbo
 node_modules/
+dist/
 .parcel-cache/
 *.log
 .env
 coverage/
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/

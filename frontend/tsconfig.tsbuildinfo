@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/api.ts","./src/main.tsx","./src/types.ts","./src/vite-env.d.ts","./src/pages/analytics.tsx","./src/pages/bikes.tsx","./src/pages/dashboard.tsx","./src/pages/logride.tsx","./src/pages/ridedetail.tsx","./src/pages/rides.tsx"],"version":"5.9.3"}
