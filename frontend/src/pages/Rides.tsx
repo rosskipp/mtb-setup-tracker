@@ -1,16 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getRides, getBikes, deleteRide } from '../api/client';
-import type { Ride, Bike, Condition } from '../types';
+import type { Ride, Bike, TrailCondition } from '../types';
 
-const CONDITIONS: { value: Condition; label: string; emoji: string }[] = [
+const CONDITIONS: { value: TrailCondition; label: string; emoji: string }[] = [
   { value: 'dry', label: 'Dry', emoji: '☀️' },
   { value: 'tacky', label: 'Tacky', emoji: '👌' },
   { value: 'wet', label: 'Wet', emoji: '🌧️' },
   { value: 'muddy', label: 'Muddy', emoji: '💩' },
-  { value: 'snow', label: 'Snow', emoji: '❄️' },
-  { value: 'loose', label: 'Loose', emoji: '🏜️' },
-  { value: 'hero_dirt', label: 'Hero Dirt', emoji: '🤩' },
+  { value: 'mixed', label: 'Mixed', emoji: '🌤️' },
 ];
 
 export default function Rides() {
@@ -44,14 +42,13 @@ export default function Rides() {
       result = result.filter((r) => r.bike_id === bikeFilter);
     }
     if (conditionFilter) {
-      result = result.filter((r) => r.conditions === conditionFilter);
+      result = result.filter((r) => r.trail_condition === conditionFilter);
     }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
         (r) =>
           r.trail_name.toLowerCase().includes(q) ||
-          r.location?.toLowerCase().includes(q) ||
           r.notes?.toLowerCase().includes(q),
       );
     }
@@ -101,7 +98,7 @@ export default function Rides() {
             <input
               type="text"
               className="input"
-              placeholder="Trail, location, notes..."
+              placeholder="Trail, notes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -170,10 +167,10 @@ export default function Rides() {
                 <Link to={`/rides/${ride.id}/edit`} className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold">{ride.trail_name}</h3>
-                    {ride.conditions && (
+                    {ride.trail_condition && (
                       <span className="badge bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                        {CONDITIONS.find((c) => c.value === ride.conditions)?.emoji}{' '}
-                        {CONDITIONS.find((c) => c.value === ride.conditions)?.label}
+                        {CONDITIONS.find((c) => c.value === ride.trail_condition)?.emoji}{' '}
+                        {CONDITIONS.find((c) => c.value === ride.trail_condition)?.label}
                       </span>
                     )}
                   </div>
@@ -181,12 +178,6 @@ export default function Rides() {
                     <span>{new Date(ride.date).toLocaleDateString()}</span>
                     <span>·</span>
                     <span>{getBikeName(ride.bike_id)}</span>
-                    {ride.location && (
-                      <>
-                        <span>·</span>
-                        <span>{ride.location}</span>
-                      </>
-                    )}
                     {ride.duration_minutes && (
                       <>
                         <span>·</span>
@@ -197,19 +188,19 @@ export default function Rides() {
 
                   {/* Setup preview */}
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {ride.suspension_setup.fork_air_pressure_psi && (
+                    {ride.setup?.fork_air_pressure_psi && (
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        Fork {ride.suspension_setup.fork_air_pressure_psi}psi
+                        Fork {ride.setup.fork_air_pressure_psi}psi
                       </span>
                     )}
-                    {ride.suspension_setup.shock_air_pressure_psi && (
+                    {ride.setup?.shock_air_pressure_psi && (
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        · Shock {ride.suspension_setup.shock_air_pressure_psi}psi
+                        · Shock {ride.setup.shock_air_pressure_psi}psi
                       </span>
                     )}
-                    {ride.tire_setup.front_tire_pressure_psi && (
+                    {ride.setup?.front_tire_pressure_psi && (
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        · Tires F{ride.tire_setup.front_tire_pressure_psi}/R{ride.tire_setup.rear_tire_pressure_psi}
+                        · Tires F{ride.setup.front_tire_pressure_psi}/R{ride.setup.rear_tire_pressure_psi}
                       </span>
                     )}
                   </div>

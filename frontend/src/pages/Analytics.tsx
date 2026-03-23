@@ -94,11 +94,11 @@ export default function Analytics() {
     () => [
       {
         name: 'Front',
-        psi: avg(highRated.map((r) => r.tire_setup.front_tire_pressure_psi)),
+        psi: avg(highRated.map((r) => r.setup?.front_tire_pressure_psi)),
       },
       {
         name: 'Rear',
-        psi: avg(highRated.map((r) => r.tire_setup.rear_tire_pressure_psi)),
+        psi: avg(highRated.map((r) => r.setup?.rear_tire_pressure_psi)),
       },
     ],
     [highRated],
@@ -109,11 +109,11 @@ export default function Analytics() {
     () => [
       {
         name: 'Fork',
-        psi: avg(highRated.map((r) => r.suspension_setup.fork_air_pressure_psi)),
+        psi: avg(highRated.map((r) => r.setup?.fork_air_pressure_psi)),
       },
       {
         name: 'Shock',
-        psi: avg(highRated.map((r) => r.suspension_setup.shock_air_pressure_psi)),
+        psi: avg(highRated.map((r) => r.setup?.shock_air_pressure_psi)),
       },
     ],
     [highRated],
@@ -122,10 +122,8 @@ export default function Analytics() {
   // ---- Sweet Spot: Fork Damping ----
   const forkDampingData = useMemo(
     () => [
-      { name: 'HSC', clicks: avg(highRated.map((r) => r.suspension_setup.fork_hsc)) },
-      { name: 'LSC', clicks: avg(highRated.map((r) => r.suspension_setup.fork_lsc)) },
-      { name: 'HSR', clicks: avg(highRated.map((r) => r.suspension_setup.fork_hsr)) },
-      { name: 'LSR', clicks: avg(highRated.map((r) => r.suspension_setup.fork_lsr)) },
+      { name: 'Rebound', clicks: avg(highRated.map((r) => r.setup?.fork_rebound_clicks)) },
+      { name: 'Compression', clicks: avg(highRated.map((r) => r.setup?.fork_compression_clicks)) },
     ],
     [highRated],
   );
@@ -133,10 +131,8 @@ export default function Analytics() {
   // ---- Sweet Spot: Shock Damping ----
   const shockDampingData = useMemo(
     () => [
-      { name: 'HSC', clicks: avg(highRated.map((r) => r.suspension_setup.shock_hsc)) },
-      { name: 'LSC', clicks: avg(highRated.map((r) => r.suspension_setup.shock_lsc)) },
-      { name: 'HSR', clicks: avg(highRated.map((r) => r.suspension_setup.shock_hsr)) },
-      { name: 'LSR', clicks: avg(highRated.map((r) => r.suspension_setup.shock_lsr)) },
+      { name: 'Rebound', clicks: avg(highRated.map((r) => r.setup?.shock_rebound_clicks)) },
+      { name: 'Compression', clicks: avg(highRated.map((r) => r.setup?.shock_compression_clicks)) },
     ],
     [highRated],
   );
@@ -157,10 +153,10 @@ export default function Analytics() {
           month: 'short',
           day: 'numeric',
         }),
-        forkPsi: r.suspension_setup.fork_air_pressure_psi,
-        shockPsi: r.suspension_setup.shock_air_pressure_psi,
-        frontTire: r.tire_setup.front_tire_pressure_psi,
-        rearTire: r.tire_setup.rear_tire_pressure_psi,
+        forkPsi: r.setup?.fork_air_pressure_psi,
+        shockPsi: r.setup?.shock_air_pressure_psi,
+        frontTire: r.setup?.front_tire_pressure_psi,
+        rearTire: r.setup?.rear_tire_pressure_psi,
         rating: r.rating,
       }));
   }, [filteredRides, selectedTrail]);

@@ -2,10 +2,8 @@ export interface Bike {
   id: string;
   name: string;
   year?: number;
-  brand?: string;
-  model?: string;
-  fork_travel_mm?: number;
-  shock_travel_mm?: number;
+  travel_front_mm?: number;
+  travel_rear_mm?: number;
   wheel_size?: string;
   notes?: string;
   created_at: string;
@@ -15,39 +13,52 @@ export interface Bike {
 export interface BikeCreate {
   name: string;
   year?: number;
-  brand?: string;
-  model?: string;
-  fork_travel_mm?: number;
-  shock_travel_mm?: number;
+  travel_front_mm?: number;
+  travel_rear_mm?: number;
   wheel_size?: string;
   notes?: string;
 }
 
-export interface SuspensionSetup {
-  // Fork
+export interface Setup {
+  id: string;
+  ride_id: string;
+  front_tire_brand?: string;
+  front_tire_model?: string;
+  front_tire_pressure_psi?: number;
+  rear_tire_brand?: string;
+  rear_tire_model?: string;
+  rear_tire_pressure_psi?: number;
   fork_air_pressure_psi?: number;
-  fork_hsc?: number;
-  fork_lsc?: number;
-  fork_hsr?: number;
-  fork_lsr?: number;
+  fork_rebound_clicks?: number;
+  fork_compression_clicks?: number;
   fork_tokens?: number;
-  // Shock
   shock_air_pressure_psi?: number;
-  shock_hsc?: number;
-  shock_lsc?: number;
-  shock_hsr?: number;
-  shock_lsr?: number;
-  shock_tokens?: number;
+  shock_rebound_clicks?: number;
+  shock_compression_clicks?: number;
+  shock_volume_spacers?: number;
+  notes?: string;
 }
 
-export interface TireSetup {
-  front_tire_pressure_psi?: number;
-  rear_tire_pressure_psi?: number;
+export interface SetupCreate {
+  front_tire_brand?: string;
   front_tire_model?: string;
+  front_tire_pressure_psi?: number;
+  rear_tire_brand?: string;
   rear_tire_model?: string;
-  front_tire_insert?: boolean;
-  rear_tire_insert?: boolean;
+  rear_tire_pressure_psi?: number;
+  fork_air_pressure_psi?: number;
+  fork_rebound_clicks?: number;
+  fork_compression_clicks?: number;
+  fork_tokens?: number;
+  shock_air_pressure_psi?: number;
+  shock_rebound_clicks?: number;
+  shock_compression_clicks?: number;
+  shock_volume_spacers?: number;
+  notes?: string;
 }
+
+export type TrailCondition = 'dry' | 'tacky' | 'muddy' | 'wet' | 'mixed';
+export type Weather = 'sunny' | 'cloudy' | 'rainy' | 'cold';
 
 export interface Ride {
   id: string;
@@ -55,37 +66,25 @@ export interface Ride {
   bike?: Bike;
   date: string;
   trail_name: string;
-  location?: string;
-  conditions?: string;
+  trail_condition?: TrailCondition;
+  weather?: Weather;
+  temperature_f?: number;
   duration_minutes?: number;
-  distance_miles?: number;
   rating?: number;
   notes?: string;
-  suspension_setup: SuspensionSetup;
-  tire_setup: TireSetup;
+  setup?: Setup;
   created_at: string;
-  updated_at: string;
 }
 
 export interface RideCreate {
   bike_id: string;
   date: string;
   trail_name: string;
-  location?: string;
-  conditions?: string;
+  trail_condition?: TrailCondition;
+  weather?: Weather;
+  temperature_f?: number;
   duration_minutes?: number;
-  distance_miles?: number;
   rating?: number;
   notes?: string;
-  suspension_setup: SuspensionSetup;
-  tire_setup: TireSetup;
-}
-
-export type Condition = 'dry' | 'tacky' | 'wet' | 'muddy' | 'snow' | 'loose' | 'hero_dirt';
-
-export interface SetupAnalytics {
-  trail_name: string;
-  avg_rating: number;
-  ride_count: number;
-  best_setup: SuspensionSetup & TireSetup;
+  setup?: SetupCreate;
 }
