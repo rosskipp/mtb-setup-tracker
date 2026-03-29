@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { getBikes, createRide, updateRide, getRide } from '../api/client';
 import type { Bike, RideCreate, TrailCondition, Weather } from '../types';
 
@@ -122,13 +122,16 @@ function NumField({
 export default function LogRide() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const isEdit = Boolean(id);
+  const fromId = !isEdit ? searchParams.get('from') : null;
 
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [form, setForm] = useState<FormData>(initialForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [duplicateSource, setDuplicateSource] = useState<{ trail_name: string; date: string } | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -165,6 +168,36 @@ export default function LogRide() {
             shock_volume_spacers: ride.setup?.shock_volume_spacers?.toString() || '',
             setup_notes: ride.setup?.notes || '',
           });
+        } else if (fromId) {
+          const rideRes = await getRide(fromId);
+          const ride = rideRes.data;
+          setDuplicateSource({ trail_name: ride.trail_name, date: ride.date });
+          setForm({
+            bike_id: ride.bike_id,
+            date: new Date().toISOString().split('T')[0],
+            trail_name: ride.trail_name,
+            trail_condition: ride.trail_condition || '',
+            weather: ride.weather || '',
+            temperature_f: ride.temperature_f?.toString() || '',
+            duration_minutes: ride.duration_minutes?.toString() || '',
+            rating: ride.rating || 0,
+            notes: ride.notes || '',
+            front_tire_brand: ride.setup?.front_tire_brand || '',
+            front_tire_model: ride.setup?.front_tire_model || '',
+            front_tire_pressure_psi: ride.setup?.front_tire_pressure_psi?.toString() || '',
+            rear_tire_brand: ride.setup?.rear_tire_brand || '',
+            rear_tire_model: ride.setup?.rear_tire_model || '',
+            rear_tire_pressure_psi: ride.setup?.rear_tire_pressure_psi?.toString() || '',
+            fork_air_pressure_psi: ride.setup?.fork_air_pressure_psi?.toString() || '',
+            fork_rebound_clicks: ride.setup?.fork_rebound_clicks?.toString() || '',
+            fork_compression_clicks: ride.setup?.fork_compression_clicks?.toString() || '',
+            fork_tokens: ride.setup?.fork_tokens?.toString() || '',
+            shock_air_pressure_psi: ride.setup?.shock_air_pressure_psi?.toString() || '',
+            shock_rebound_clicks: ride.setup?.shock_rebound_clicks?.toString() || '',
+            shock_compression_clicks: ride.setup?.shock_compression_clicks?.toString() || '',
+            shock_volume_spacers: ride.setup?.shock_volume_spacers?.toString() || '',
+            setup_notes: ride.setup?.notes || '',
+          });
         }
       } catch (err) {
         console.error(err);
@@ -174,7 +207,7 @@ export default function LogRide() {
       }
     };
     load();
-  }, [id, isEdit]);
+  }, [id, isEdit, fromId]);
 
   const set = (field: keyof FormData) => (value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -257,10 +290,28 @@ export default function LogRide() {
             {isEdit ? 'Update ride details and setup' : 'Record your ride and setup'}
           </p>
         </div>
-        <button onClick={() => navigate(-1)} className="btn-secondary">
-          Cancel
-        </button>
+        <div className="flex gap-2">
+          {isEdit && id && (
+            <button
+              type="button"
+              onClick={() => navigate(`/rides/new?from=${id}`)}
+              className="btn-secondary"
+            >
+              Duplicate
+            </button>
+          )}
+          <button onClick={() => navigate(-1)} className="btn-secondary">
+            Cancel
+          </button>
+        </div>
       </div>
+
+      {duplicateSource && (
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 px-4 py-3 rounded-lg text-sm">
+          Duplicating from <strong>{duplicateSource.trail_name}</strong> on{' '}
+          <strong>{new Date(duplicateSource.date + 'T00:00:00').toLocaleDateString()}</strong>
+        </div>
+      )}
 
       {error && (
         <div className="bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-sm">

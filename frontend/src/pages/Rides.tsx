@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getRides, getBikes, deleteRide } from '../api/client';
 import type { Ride, Bike, TrailCondition } from '../types';
 
@@ -12,6 +12,7 @@ const CONDITIONS: { value: TrailCondition; label: string; emoji: string }[] = [
 ];
 
 export default function Rides() {
+  const navigate = useNavigate();
   const [rides, setRides] = useState<Ride[]>([]);
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [loading, setLoading] = useState(true);
@@ -225,6 +226,15 @@ export default function Rides() {
                       ))}
                     </div>
                   )}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(`/rides/new?from=${ride.id}`);
+                    }}
+                    className="text-xs text-brand-500 hover:text-brand-400 transition-colors"
+                  >
+                    Duplicate
+                  </button>
                   <button
                     onClick={(e) => {
                       e.preventDefault();
